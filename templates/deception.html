@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="dec-view">
+
+    <!-- Header -->
+    <div class="dec-header">
+        <div>
+            <h2>Deception Grid</h2>
+            <p class="dec-header__subtitle">
+                Adaptive deception mechanisms — honeypots, decoy servers, credentials, documents, and network paths
+            </p>
+        </div>
+        <div class="dec-header__actions">
+            <button class="btn btn--warning" id="btnActivateDecoys" onclick="activateDecoys()"
+                    title="Elevate deception posture and arm all decoys against the simulated attacker">
+                &#9670; Activate Decoys
+            </button>
+            <button class="btn btn--warning" id="btnSimulateDecoy" onclick="simulateDecoy()">
+                Simulate Attacker &rarr; Decoy
+            </button>
+            <button class="btn btn--danger" id="btnContain" onclick="containAttacker()"
+                    title="Contain the simulated attacker — freezes all adversary activity in Cyber Arena">
+                Freeze / Contain
+            </button>
+            <a href="/detection" class="btn btn--outline">Detection &rarr;</a>
+        </div>
+    </div>
+
+    <!-- Feedback banner -->
+    <div class="dec-feedback" id="feedbackBanner" style="display:none;"></div>
+
+    <!-- Stats row -->
+    <div class="dec-stats" id="decStats">
+        <div class="dec-stat">
+            <span class="dec-stat__value" id="statTotal">0</span>
+            <span class="dec-stat__label">Total Decoys</span>
+        </div>
+        <div class="dec-stat">
+            <span class="dec-stat__value dec-stat__value--armed" id="statArmed">0</span>
+            <span class="dec-stat__label">Armed</span>
+        </div>
+        <div class="dec-stat">
+            <span class="dec-stat__value dec-stat__value--active" id="statActive">0</span>
+            <span class="dec-stat__label">Active</span>
+        </div>
+        <div class="dec-stat">
+            <span class="dec-stat__value dec-stat__value--bypassed" id="statBypassed">0</span>
+            <span class="dec-stat__label">Bypassed</span>
+        </div>
+        <div class="dec-stat">
+            <span class="dec-stat__value" id="statEvents">0</span>
+            <span class="dec-stat__label">Events</span>
+        </div>
+        <div class="dec-stat">
+            <span class="dec-stat__value dec-stat__value--diverted" id="statDiverted">0</span>
+            <span class="dec-stat__label">Diverted Assets</span>
+        </div>
+    </div>
+
+    <div class="dec-layout">
+
+        <!-- Adaptive Response Panel -->
+        <div class="dec-card dec-card--adaptive">
+            <div class="dec-card__header"><h3>Adaptive Deception Response</h3></div>
+            <div class="dec-card__body">
+                <div class="dec-adaptive" id="adaptivePanel">
+                    <div class="dec-adaptive__posture" id="postureDisplay">
+                        <span class="dec-adaptive__posture-level">MONITOR</span>
+                    </div>
+                    <p class="dec-adaptive__desc" id="postureDesc">Loading&hellip;</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Attacker Status Panel -->
+        <div class="dec-card dec-card--attacker">
+            <div class="dec-card__header"><h3>Simulated Attacker Status</h3></div>
+            <div class="dec-card__body">
+                <div class="dec-attacker" id="attackerPanel">
+                    <div class="dec-attacker__state" id="attackerState">
+                        <span class="dec-attacker__state-badge dec-attacker__state-badge--free" id="stateBadge">FREE ROAMING</span>
+                    </div>
+                    <div class="dec-attacker__details">
+                        <div class="dec-attacker__row">
+                            <span class="dec-attacker__label">Current Decoy:</span>
+                            <span class="dec-attacker__value" id="currentDecoy">&mdash;</span>
+                        </div>
+                        <div class="dec-attacker__row">
+                            <span class="dec-attacker__label">Entry Timestamp:</span>
+                            <span class="dec-attacker__value dec-attacker__value--mono" id="entryTimestamp">&mdash;</span>
+                        </div>
+                        <div class="dec-attacker__row">
+                            <span class="dec-attacker__label">Deception Status:</span>
+                            <span class="dec-attacker__value" id="deceptionStatus">No active deception</span>
+                        </div>
+                        <div class="dec-attacker__row">
+                            <span class="dec-attacker__label">Evidence Collected:</span>
+                            <span class="dec-attacker__value dec-attacker__value--mono" id="evidenceCollected">0</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Decoy Inventory -->
+        <div class="dec-card dec-card--wide">
+            <div class="dec-card__header"><h3>Decoy Inventory</h3></div>
+            <div class="dec-card__body">
+                <div class="dec-decoy-grid" id="decoyGrid">
+                    <p class="dec-card__empty">Loading decoys&hellip;</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Active Decoys & Attacker Activity -->
+        <div class="dec-card dec-card--wide">
+            <div class="dec-card__header"><h3>Attacker Activity Inside Decoys</h3></div>
+            <div class="dec-card__body">
+                <div class="dec-activity-log" id="activityLog">
+                    <p class="dec-card__empty">No attacker activity recorded yet.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Deception Events -->
+        <div class="dec-card dec-card--wide">
+            <div class="dec-card__header"><h3>Deception Events</h3></div>
+            <div class="dec-card__body">
+                <div class="dec-event-list" id="eventList">
+                    <p class="dec-card__empty">No deception events yet. Run the simulation or use the Simulate Attacker &rarr; Decoy control.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Asset Type Legend -->
+        <div class="dec-card dec-card--wide">
+            <div class="dec-card__header"><h3>Asset Classification</h3></div>
+            <div class="dec-card__body">
+                <div class="dec-legend" id="assetLegend">
+                    <div class="dec-legend__item dec-legend__item--real">
+                        <span class="dec-legend__dot"></span>
+                        <div>
+                            <strong>Real Asset</strong>
+                            <p>Production infrastructure within the Digital Twin.</p>
+                        </div>
+                    </div>
+                    <div class="dec-legend__item dec-legend__item--decoy">
+                        <span class="dec-legend__dot"></span>
+                        <div>
+                            <strong>Decoy Asset</strong>
+                            <p>Fictional decoy designed to attract and delay the attacker.</p>
+                        </div>
+                    </div>
+                    <div class="dec-legend__item dec-legend__item--isolated">
+                        <span class="dec-legend__dot"></span>
+                        <div>
+                            <strong>Isolated Asset</strong>
+                            <p>Asset that has been quarantined from the network.</p>
+                        </div>
+                    </div>
+                    <div class="dec-legend__item dec-legend__item--contained">
+                        <span class="dec-legend__dot"></span>
+                        <div>
+                            <strong>Contained Attacker</strong>
+                            <p>Simulated attacker whose activity has been frozen.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<script src="{{ url_for('static', filename='js/deception.js') }}"></script>
+{% endblock %}

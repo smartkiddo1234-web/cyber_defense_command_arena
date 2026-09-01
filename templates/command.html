@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="cmd-view">
+
+    <!-- Header -->
+    <div class="cmd-header">
+        <div>
+            <h2>AI Command &amp; Response</h2>
+            <p class="cmd-header__subtitle">
+                AI analyses the threat picture and recommends defensive actions.
+                The human commander makes the final decision. All data is synthetic.
+            </p>
+        </div>
+        <div class="cmd-header__actions">
+            <button class="btn btn--primary" id="btnGenerate" title="Generate AI recommendation from current threat data">
+                Generate Recommendation
+            </button>
+            <a href="/detection" class="btn btn--outline">Detection &rarr;</a>
+        </div>
+    </div>
+
+    <!-- Feedback banner -->
+    <div class="cmd-feedback" id="cmdFeedback" style="display:none;"></div>
+
+    <!-- Stats Row -->
+    <div class="cmd-stats">
+        <div class="cmd-stat">
+            <span class="cmd-stat__value" id="statRecs">0</span>
+            <span class="cmd-stat__label">Recommendations</span>
+        </div>
+        <div class="cmd-stat">
+            <span class="cmd-stat__value" id="statPending">0</span>
+            <span class="cmd-stat__label">Pending</span>
+        </div>
+        <div class="cmd-stat">
+            <span class="cmd-stat__value" id="statApproved">0</span>
+            <span class="cmd-stat__label">Approved</span>
+        </div>
+        <div class="cmd-stat">
+            <span class="cmd-stat__value" id="statOverridden">0</span>
+            <span class="cmd-stat__label">Overridden</span>
+        </div>
+        <div class="cmd-stat">
+            <span class="cmd-stat__value" id="statDismissed">0</span>
+            <span class="cmd-stat__label">Dismissed</span>
+        </div>
+    </div>
+
+    <div class="cmd-layout">
+
+        <!-- Latest Recommendation -->
+        <div class="cmd-card cmd-card--wide" id="recCard" style="display:none;">
+            <div class="cmd-card__header"><h3>Latest AI Recommendation</h3></div>
+            <div class="cmd-card__body">
+                <div class="cmd-rec">
+                    <div class="cmd-rec__assessment" id="recAssessment"></div>
+                    <div class="cmd-rec__grid">
+                        <div class="cmd-rec__field">
+                            <span class="cmd-rec__label">Threat Level</span>
+                            <span class="cmd-rec__value" id="recThreatLevel"></span>
+                        </div>
+                        <div class="cmd-rec__field">
+                            <span class="cmd-rec__label">Confidence</span>
+                            <span class="cmd-rec__value" id="recConfidence"></span>
+                        </div>
+                        <div class="cmd-rec__field">
+                            <span class="cmd-rec__label">Sectors</span>
+                            <span class="cmd-rec__value" id="recSectors"></span>
+                        </div>
+                        <div class="cmd-rec__field">
+                            <span class="cmd-rec__label">MITRE</span>
+                            <span class="cmd-rec__value" id="recMitre"></span>
+                        </div>
+                    </div>
+                    <div class="cmd-rec__section">
+                        <span class="cmd-rec__label">Suspected Activity</span>
+                        <p id="recActivity"></p>
+                    </div>
+                    <div class="cmd-rec__section">
+                        <span class="cmd-rec__label">Recommended Action</span>
+                        <p class="cmd-rec__action" id="recAction"></p>
+                        <p class="cmd-rec__desc" id="recActionDesc"></p>
+                    </div>
+                    <div class="cmd-rec__section">
+                        <span class="cmd-rec__label">Reason</span>
+                        <p id="recReason"></p>
+                    </div>
+                    <div class="cmd-rec__section">
+                        <span class="cmd-rec__label">Evidence Summary</span>
+                        <ul class="cmd-rec__evidence" id="recEvidence"></ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pending Decisions -->
+        <div class="cmd-card cmd-card--wide">
+            <div class="cmd-card__header"><h3>Pending Decisions</h3></div>
+            <div class="cmd-card__body">
+                <div id="pendingList">
+                    <p class="cmd-card__empty">No pending decisions. Generate a recommendation to begin.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Override Form (hidden) -->
+        <div class="cmd-card cmd-card--wide" id="overrideCard" style="display:none;">
+            <div class="cmd-card__header"><h3>Override Decision #<span id="overrideDecId"></span></h3></div>
+            <div class="cmd-card__body">
+                <div class="cmd-override-form">
+                    <label>Choose action:
+                        <select id="overrideAction">
+                            <option value="monitor">Monitor</option>
+                            <option value="investigate">Investigate</option>
+                            <option value="isolate_asset">Isolate Simulated Asset</option>
+                            <option value="deploy_deception">Deploy Deception</option>
+                            <option value="increase_monitoring">Increase Monitoring</option>
+                            <option value="protect_connected">Protect Connected Assets</option>
+                            <option value="escalate">Escalate to Commander</option>
+                        </select>
+                    </label>
+                    <label>Reason:
+                        <textarea id="overrideReason" rows="2" placeholder="Why override?"></textarea>
+                    </label>
+                    <div class="cmd-override-form__btns">
+                        <button class="btn btn--warning" id="btnConfirmOverride">Confirm Override</button>
+                        <button class="btn btn--outline" id="btnCancelOverride">Cancel</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Decision Log -->
+        <div class="cmd-card cmd-card--wide">
+            <div class="cmd-card__header"><h3>Decision Log</h3></div>
+            <div class="cmd-card__body">
+                <div id="decisionLog">
+                    <p class="cmd-card__empty">No decisions recorded yet.</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<script src="{{ url_for('static', filename='js/command.js') }}"></script>
+{% endblock %}

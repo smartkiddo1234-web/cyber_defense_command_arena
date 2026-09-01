@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ app_short_name }} — {{ app_name }}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+    <header class="top-bar">
+        <div class="top-bar__brand">
+            <span class="brand-icon"><svg class="cyber-wheel" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+                <!-- Outer orbital ring — slow clockwise rotation with tech dashes -->
+                <g class="wheel-outer">
+                    <circle cx="50" cy="50" r="45" fill="none" stroke="currentColor" stroke-width="1.8" stroke-dasharray="8 4 2 4" opacity="0.4"/>
+                </g>
+                <!-- Middle ring — counter-clockwise with scanning sweep -->
+                <g class="wheel-mid">
+                    <circle cx="50" cy="50" r="35" fill="none" stroke="currentColor" stroke-width="1.2" stroke-dasharray="3 7" opacity="0.3"/>
+                    <path d="M50 15 A35 35 0 0 1 75 28" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" opacity="0.6"/>
+                </g>
+                <!-- Inner ring — fast clockwise with nodes -->
+                <g class="wheel-inner">
+                    <circle cx="50" cy="50" r="25" fill="none" stroke="currentColor" stroke-width="1.5" stroke-dasharray="5 3" opacity="0.45"/>
+                    <circle cx="50" cy="25" r="2.5" fill="currentColor" opacity="0.7"/>
+                    <circle cx="50" cy="75" r="2.5" fill="currentColor" opacity="0.7"/>
+                    <circle cx="25" cy="50" r="2.5" fill="currentColor" opacity="0.7"/>
+                    <circle cx="75" cy="50" r="2.5" fill="currentColor" opacity="0.7"/>
+                </g>
+                <!-- Orbital dot — fast revolution -->
+                <g class="wheel-orbit">
+                    <circle cx="50" cy="10" r="2" fill="currentColor" opacity="0.8"/>
+                </g>
+                <!-- Central core — pulsing glow -->
+                <circle cx="50" cy="50" r="6" fill="currentColor" opacity="0.2" class="core-glow"/>
+                <circle cx="50" cy="50" r="3.5" fill="currentColor" opacity="0.85"/>
+            </svg></span>
+            <div>
+                <h1>{{ app_short_name }}</h1>
+                <span class="brand-subtitle">{{ app_name }}</span>
+            </div>
+        </div>
+        <div class="top-bar__status">
+            <span class="status-badge status-badge--standby status-badge--clickable"
+                  id="systemBadge"
+                  role="button"
+                  tabindex="0"
+                  title="Click to toggle standby mode"
+                  aria-label="System status — click to toggle standby">SYSTEM OPERATIONAL — Click for Standby</span>
+            <span class="top-bar__version">v{{ app_version }} &middot; {{ app_phase }}</span>
+        </div>
+    </header>
+
+    <nav class="nav-bar">
+        <a href="/" class="nav-bar__link{% if request.path == '/' %} nav-bar__link--active{% endif %}">Dashboard</a>
+        <a href="/digital-twin" class="nav-bar__link{% if request.path == '/digital-twin' %} nav-bar__link--active{% endif %}">Digital Twin</a>
+        <a href="/simulation" class="nav-bar__link{% if request.path == '/simulation' %} nav-bar__link--active{% endif %}">Simulation</a>
+        <a href="/detection" class="nav-bar__link{% if request.path == '/detection' %} nav-bar__link--active{% endif %}">Detection</a>
+        <a href="/deception" class="nav-bar__link{% if request.path == '/deception' %} nav-bar__link--active{% endif %}">Deception</a>
+        <a href="/command" class="nav-bar__link{% if request.path == '/command' %} nav-bar__link--active{% endif %}">Command</a>
+        <a href="/adversary" class="nav-bar__link{% if request.path == '/adversary' %} nav-bar__link--active{% endif %}">Adversary</a>
+        <a href="/impact" class="nav-bar__link{% if request.path == '/impact' %} nav-bar__link--active{% endif %}">Impact</a>
+        <a href="/adaptation" class="nav-bar__link{% if request.path == '/adaptation' %} nav-bar__link--active{% endif %}">Adaptation</a>
+        <a href="/analysis" class="nav-bar__link{% if request.path == '/analysis' %} nav-bar__link--active{% endif %}">Analysis</a>
+        <a href="/reports" class="nav-bar__link{% if request.path == '/reports' %} nav-bar__link--active{% endif %}">Reports</a>
+    </nav>
+
+    <main class="content">
+        {% block content %}
+        {% endblock %}
+
+        {% if error %}
+        <div class="error-panel">
+            <p>{{ error }}</p>
+            <a href="/">Return to Dashboard</a>
+        </div>
+        {% endif %}
+    </main>
+
+    <footer class="footer">
+        <p>
+            <strong>SYNTHETIC SIMULATION ONLY</strong> &mdash;
+            This application does not interact with real systems, networks, or infrastructure.
+            All data is fictional and generated locally.
+        </p>
+        <p>&copy; {{ app_short_name }} &middot; Academic Cybersecurity Competition</p>
+    </footer>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+</body>
+</html>

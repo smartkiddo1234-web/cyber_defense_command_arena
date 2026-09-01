@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="adv-view">
+
+    <!-- Header -->
+    <div class="adv-header">
+        <div>
+            <h2>Adversary Intelligence</h2>
+            <p class="adv-header__subtitle">
+                Simulated adversary tracking derived from detection, deception, and simulation data.
+                All profiles are synthetic.
+            </p>
+        </div>
+        <div class="adv-header__actions">
+            <a href="/simulation" class="btn btn--outline">Simulation &rarr;</a>
+        </div>
+    </div>
+
+    <!-- Top Stats -->
+    <div class="adv-stats" id="advStats">
+        <div class="adv-stat">
+            <span class="adv-stat__value" id="statId">—</span>
+            <span class="adv-stat__label">Adversary ID</span>
+        </div>
+        <div class="adv-stat">
+            <span class="adv-stat__value" id="statSector">—</span>
+            <span class="adv-stat__label">Current Sector</span>
+        </div>
+        <div class="adv-stat">
+            <span class="adv-stat__value" id="statStealth">0%</span>
+            <span class="adv-stat__label">Stealth Level</span>
+        </div>
+        <div class="adv-stat">
+            <span class="adv-stat__value" id="statAdapt">UNKNOWN</span>
+            <span class="adv-stat__label">Adaptation Status</span>
+        </div>
+        <div class="adv-stat">
+            <span class="adv-stat__value" id="statEvidence">0</span>
+            <span class="adv-stat__label">Evidence Collected</span>
+        </div>
+        <div class="adv-stat">
+            <span class="adv-stat__value" id="statConfidence">0%</span>
+            <span class="adv-stat__label">Threat Confidence</span>
+        </div>
+    </div>
+
+    <div class="adv-layout">
+
+        <!-- Attack Progression -->
+        <div class="adv-card adv-card--wide">
+            <div class="adv-card__header"><h3>Attack Progression</h3></div>
+            <div class="adv-card__body" id="attackProgression">
+                <p class="adv-card__empty">No attack path recorded. Start the simulation to track adversary movement.</p>
+            </div>
+        </div>
+
+        <!-- Observed MITRE Techniques -->
+        <div class="adv-card">
+            <div class="adv-card__header"><h3>Observed MITRE ATT&amp;CK Techniques</h3></div>
+            <div class="adv-card__body" id="observedTechniques">
+                <p class="adv-card__empty">No techniques observed yet.</p>
+            </div>
+        </div>
+
+        <!-- Stealth & Adaptation -->
+        <div class="adv-card">
+            <div class="adv-card__header"><h3>Stealth &amp; Adaptation</h3></div>
+            <div class="adv-card__body">
+                <div class="adv-stealth">
+                    <span class="adv-stealth__label">Stealth Level</span>
+                    <div class="adv-stealth__bar">
+                        <div class="adv-stealth__fill" id="stealthFill" style="width:0%"></div>
+                    </div>
+                    <span class="adv-stealth__value" id="stealthValue">0%</span>
+                </div>
+                <div class="adv-adapt">
+                    <span class="adv-adapt__label">Adaptation Status</span>
+                    <span class="adv-adapt__badge" id="adaptBadge">UNKNOWN</span>
+                </div>
+                <div class="adv-timestamps">
+                    <div class="adv-ts-row">
+                        <span class="adv-ts-label">First Seen:</span>
+                        <span id="firstSeen">—</span>
+                    </div>
+                    <div class="adv-ts-row">
+                        <span class="adv-ts-label">Last Seen:</span>
+                        <span id="lastSeen">—</span>
+                    </div>
+                    <div class="adv-ts-row">
+                        <span class="adv-ts-label">Entry Point:</span>
+                        <span id="entryPoint">—</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Behavior History -->
+        <div class="adv-card adv-card--wide">
+            <div class="adv-card__header"><h3>Behavior History</h3></div>
+            <div class="adv-card__body">
+                <table class="adv-table" id="behaviorTable">
+                    <thead>
+                        <tr>
+                            <th>Time</th>
+                            <th>Sector</th>
+                            <th>Action</th>
+                            <th>MITRE</th>
+                            <th>Detail</th>
+                        </tr>
+                    </thead>
+                    <tbody id="behaviorBody">
+                        <tr class="adv-table__empty"><td colspan="5">No behavior recorded yet.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<script src="{{ url_for('static', filename='js/adversary.js') }}"></script>
+{% endblock %}

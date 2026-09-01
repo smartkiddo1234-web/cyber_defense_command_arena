@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="rpt-view">
+
+    <!-- Header -->
+    <div class="rpt-header">
+        <div>
+            <h2>Reports &amp; Scenario Replay</h2>
+            <p class="rpt-header__subtitle">
+                Structured incident report and chronological replay of the
+                simulated attack scenario. All data is synthetic.
+            </p>
+        </div>
+        <div class="rpt-header__actions">
+            <button class="btn btn--primary" id="btnGenReport">Generate Report</button>
+            <button class="btn btn--outline" id="btnExport">Export JSON</button>
+            <a href="/command" class="btn btn--outline">Command &rarr;</a>
+        </div>
+    </div>
+
+    <!-- Feedback -->
+    <div class="rpt-feedback" id="rptFeedback" style="display:none;"></div>
+
+    <div class="rpt-layout">
+
+        <!-- Scenario Summary -->
+        <div class="rpt-card rpt-card--wide">
+            <div class="rpt-card__header"><h3>Scenario Summary</h3></div>
+            <div class="rpt-card__body" id="rptScenario">
+                <p class="rpt-card__empty">Generate a report to view the scenario summary.</p>
+            </div>
+        </div>
+
+        <!-- Threat Assessment -->
+        <div class="rpt-card">
+            <div class="rpt-card__header"><h3>Threat Assessment</h3></div>
+            <div class="rpt-card__body" id="rptThreat">
+                <p class="rpt-card__empty">No data yet.</p>
+            </div>
+        </div>
+
+        <!-- Final Outcome -->
+        <div class="rpt-card">
+            <div class="rpt-card__header"><h3>Final Outcome</h3></div>
+            <div class="rpt-card__body" id="rptOutcome">
+                <p class="rpt-card__empty">No data yet.</p>
+            </div>
+        </div>
+
+        <!-- Affected Sectors & Assets -->
+        <div class="rpt-card rpt-card--wide">
+            <div class="rpt-card__header"><h3>Affected Sectors &amp; Assets</h3></div>
+            <div class="rpt-card__body" id="rptAffected">
+                <p class="rpt-card__empty">No data yet.</p>
+            </div>
+        </div>
+
+        <!-- MITRE ATT&CK -->
+        <div class="rpt-card">
+            <div class="rpt-card__header"><h3>MITRE ATT&amp;CK Techniques</h3></div>
+            <div class="rpt-card__body" id="rptMitre">
+                <p class="rpt-card__empty">No data yet.</p>
+            </div>
+        </div>
+
+        <!-- Deception Activity -->
+        <div class="rpt-card">
+            <div class="rpt-card__header"><h3>Deception Activity</h3></div>
+            <div class="rpt-card__body" id="rptDeception">
+                <p class="rpt-card__empty">No data yet.</p>
+            </div>
+        </div>
+
+        <!-- Evidence Chain -->
+        <div class="rpt-card rpt-card--wide">
+            <div class="rpt-card__header"><h3>Evidence Chain</h3></div>
+            <div class="rpt-card__body" id="rptEvidence">
+                <p class="rpt-card__empty">No data yet.</p>
+            </div>
+        </div>
+
+        <!-- AI Recommendations & Commander Decisions -->
+        <div class="rpt-card rpt-card--wide">
+            <div class="rpt-card__header"><h3>AI Recommendations &amp; Commander Decisions</h3></div>
+            <div class="rpt-card__body" id="rptDecisions">
+                <p class="rpt-card__empty">No data yet.</p>
+            </div>
+        </div>
+
+        <!-- Scenario Replay Timeline -->
+        <div class="rpt-card rpt-card--wide">
+            <div class="rpt-card__header"><h3>Scenario Replay Timeline</h3></div>
+            <div class="rpt-card__body" id="rptTimeline">
+                <p class="rpt-card__empty">Generate a report to view the replay timeline.</p>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<script src="{{ url_for('static', filename='js/reports.js') }}"></script>
+{% endblock %}

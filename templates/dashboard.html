@@ -1,0 +1,279 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="dashboard dashboard--viz">
+
+    <!-- Critical Alert Banner (9) -->
+    <div class="critical-alert critical-alert--clear" id="criticalAlertBanner">
+        <span class="critical-alert__icon">&#9679;</span>
+        <span class="critical-alert__text">No active critical threats. System nominal.</span>
+    </div>
+
+    <!-- Top Status Strip -->
+    <div class="viz-strip">
+        <div class="viz-strip__item">
+            <span class="viz-strip__label">Confidence</span>
+            <span class="viz-strip__value" id="vizConfidence">{{ "%.0f"|format(detection.confidence_pct) }}%</span>
+        </div>
+        <div class="viz-strip__item">
+            <span class="viz-strip__label">Risk Level</span>
+            <span class="viz-risk-badge viz-risk-badge--healthy" id="vizRiskBadge">{{ detection.risk_level|replace('_',' ')|upper }}</span>
+        </div>
+        <div class="viz-strip__item">
+            <span class="viz-strip__label">Threat</span>
+            <span class="viz-strip__value" id="vizThreatLevel">{{ detection.threat_level|upper }}</span>
+        </div>
+        <div class="viz-strip__item">
+            <span class="viz-strip__label">Score</span>
+            <span class="viz-strip__value" id="vizThreatScore">{{ "%.0f"|format(detection.threat_score * 100) }}%</span>
+        </div>
+        <div class="viz-strip__item">
+            <span class="viz-strip__label">Alerts</span>
+            <span class="viz-strip__value" id="vizActiveAlerts">{{ detection.active_alerts }}</span>
+        </div>
+        <div class="viz-strip__item">
+            <span class="viz-strip__label">Evidence</span>
+            <span class="viz-strip__value" id="vizEvidence">{{ detection.total_evidence }}</span>
+        </div>
+        <div class="viz-strip__item">
+            <span class="viz-strip__label">Sim Step</span>
+            <span class="viz-strip__value" id="vizSimStep">{{ sim_status.current_step }}/{{ sim_status.total_steps }}</span>
+        </div>
+        <div class="viz-strip__item">
+            <span class="viz-strip__label">Sector</span>
+            <span class="viz-strip__value" id="vizSimSector">{{ sim_status.current_sector or "\u2014" }}</span>
+        </div>
+    </div>
+
+    <!-- Row 1: Threat Activity + Distribution + Sector Risk -->
+    <div class="viz-grid viz-grid--row1">
+
+        <!-- 1. Threat Activity bar chart — section: Threat Status -->
+        <div class="viz-card viz-card--wide">
+            <div class="viz-card__header">
+                <h3>Threat Status</h3>
+                <span class="viz-card__badge">Detection</span>
+            </div>
+            <div class="viz-card__body echarts-chart" id="chartThreatActivity">
+                <p class="viz-empty">Loading&hellip;</p>
+            </div>
+        </div>
+
+        <!-- 2. Threat Distribution donut -->
+        <div class="viz-card">
+            <div class="viz-card__header">
+                <h3>Threat Distribution</h3>
+                <span class="viz-card__badge">Twin</span>
+            </div>
+            <div class="viz-card__body echarts-chart" id="chartThreatDistribution">
+                <p class="viz-empty">Loading&hellip;</p>
+            </div>
+        </div>
+
+        <!-- 5. Sector Risk ranked list -->
+        <div class="viz-card">
+            <div class="viz-card__header">
+                <h3>Sector Risk</h3>
+                <span class="viz-card__badge">Ranked</span>
+            </div>
+            <div class="viz-card__body echarts-chart" id="chartSectorRisk">
+                <p class="viz-empty">Loading&hellip;</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Row 2: Attack Flow + Deception Status + AI Recommendation -->
+    <div class="viz-grid viz-grid--row2">
+
+        <!-- 4. Attack Flow diagram -->
+        <div class="viz-card viz-card--wide">
+            <div class="viz-card__header">
+                <h3>Attack / Dependency Flow</h3>
+                <span class="viz-card__badge">Paths</span>
+            </div>
+            <div class="viz-card__body echarts-chart" id="chartAttackFlow">
+                <p class="viz-empty">Loading&hellip;</p>
+            </div>
+        </div>
+
+        <!-- 8. Deception Status / Defense Units / Deception Grid -->
+        <div class="viz-card" id="panelDefense">
+            <div class="viz-card__header">
+                <h3>Defense Units &mdash; Deception Grid</h3>
+                <span class="viz-card__badge" id="badgeDefense">Active</span>
+            </div>
+            <div class="viz-card__body" id="chartDeceptionStatus">
+                <p class="viz-empty">Loading&hellip;</p>
+            </div>
+            <!-- Operator Action Controls -->
+            <div class="cmd-actions-row" id="defenseActionRow">
+                <button class="btn btn--warning btn--sm" id="btnActivateDecoys"
+                        onclick="dashboardActivateDecoys()"
+                        title="Elevate deception posture and arm all decoys">
+                    &#9670; Activate Decoys
+                </button>
+                <span class="cmd-attacker-state" id="cmdAttackerState">
+                    Attacker: <span id="defAttackerBadge">FREE ROAMING</span>
+                </span>
+                <button class="btn btn--danger btn--sm" id="btnDashContain"
+                        onclick="dashboardContainAttacker()"
+                        title="Contain simulated attacker — freezes all adversary activity in Cyber Arena">
+                    &#9632; Contain Attacker
+                </button>
+            </div>
+            <!-- Feedback row -->
+            <div class="cmd-action-feedback" id="defenseActionFeedback" style="display:none;"></div>
+            <div class="viz-card__footer">
+                <a href="/deception" class="viz-link">Open Deception Grid &rarr;</a>
+            </div>
+            <!-- Hidden stat IDs for backward-compat tests & polling -->
+            <div class="viz-hidden-stats">
+                <span id="defAvailable">{{ defense_units.available }}</span>
+                <span id="defEngaged">{{ defense_units.engaged }}</span>
+                <span id="defContained">{{ defense_units.contained }}</span>
+                <span id="defIsolated">{{ defense_units.isolated_assets }}</span>
+                <span id="defPosture">{{ defense_units.posture|upper }}</span>
+                <span id="defAttacker">{{ defense_units.attacker_state|replace('_',' ')|upper }}</span>
+            </div>
+        </div>
+
+        <!-- 6. AI Recommendation -->
+        <div class="viz-card" id="panelAIRec">
+            <div class="viz-card__header">
+                <h3>AI Recommendation</h3>
+                <span class="viz-card__badge" id="badgeAIRec">{% if ai_recommendation.has_recommendation %}{% if ai_recommendation.pending_decisions > 0 %}<span class="badge badge--warning">Pending</span>{% else %}<span class="badge badge--active">Decided</span>{% endif %}{% else %}<span class="badge badge--pending">No Data</span>{% endif %}</span>
+            </div>
+            <div class="viz-card__body" id="aiRecBody">
+                {% if ai_recommendation.has_recommendation %}
+                <div class="ai-rec-panel">
+                    <div class="ai-rec-panel__action" id="aiAction">{{ ai_recommendation.action|replace('_',' ')|upper }}</div>
+                    <div class="ai-rec-panel__meta">
+                        <span>Threat: <strong id="aiThreat">{{ ai_recommendation.threat_level|upper }}</strong></span>
+                        <span>Conf: <strong id="aiConf">{{ "%.0f"|format(ai_recommendation.confidence * 100) }}%</strong></span>
+                    </div>
+                    <div class="ai-rec-panel__counts">
+                        <span>Total: <strong id="aiTotal">{{ ai_recommendation.total_recommendations }}</strong></span>
+                        <span>Pending: <strong id="aiPending">{{ ai_recommendation.pending_decisions }}</strong></span>
+                    </div>
+                    <p class="ai-rec-panel__reason" id="aiReason">{{ ai_recommendation.reason }}</p>
+                </div>
+                {% else %}
+                <p class="viz-empty" id="aiNoData">No recommendation yet. Run the simulation to generate threat data.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Row 3: Commander Controls + Confidence Trend + Evidence/Digital Twin -->
+    <div class="viz-grid viz-grid--row3">
+
+        <!-- 7. Commander Controls -->
+        <div class="viz-card viz-card--wide" id="panelCommander">
+            <div class="viz-card__header">
+                <h3>Commander Controls</h3>
+                {% if commander_controls.pending_decisions > 0 %}
+                <span class="badge badge--warning">{{ commander_controls.pending_decisions }} Pending</span>
+                {% else %}
+                <span class="badge badge--active">Up to Date</span>
+                {% endif %}
+            </div>
+            <div class="viz-card__body">
+                <div class="commander-grid">
+                    <div class="commander-stat">
+                        <span class="commander-stat__value" id="cmdTotal">{{ commander_controls.total_decisions }}</span>
+                        <span class="commander-stat__label">Total</span>
+                    </div>
+                    <div class="commander-stat">
+                        <span class="commander-stat__value commander-stat__value--warn" id="cmdPending">{{ commander_controls.pending_decisions }}</span>
+                        <span class="commander-stat__label">Pending</span>
+                    </div>
+                    <div class="commander-stat">
+                        <span class="commander-stat__value commander-stat__value--ok" id="cmdApproved">{{ commander_controls.approved }}</span>
+                        <span class="commander-stat__label">Approved</span>
+                    </div>
+                    <div class="commander-stat">
+                        <span class="commander-stat__value" id="cmdOverridden">{{ commander_controls.overridden }}</span>
+                        <span class="commander-stat__label">Overridden</span>
+                    </div>
+                    <div class="commander-stat">
+                        <span class="commander-stat__value commander-stat__value--danger" id="cmdDismissed">{{ commander_controls.dismissed }}</span>
+                        <span class="commander-stat__label">Dismissed</span>
+                    </div>
+                </div>
+                {% if commander_controls.last_decision %}
+                <p class="commander-last" id="cmdLastDecision">
+                    Last: <strong>{{ commander_controls.last_decision|upper }}</strong>
+                    {% if commander_controls.last_action %} &mdash; <code>{{ commander_controls.last_action }}</code>{% endif %}
+                    {% if commander_controls.last_reason %} &mdash; {{ commander_controls.last_reason }}{% endif %}
+                </p>
+                {% else %}
+                <p class="commander-last" id="cmdLastDecision">No decisions yet. Generate a recommendation via Command, then approve or override.</p>
+                {% endif %}
+                <div class="commander-actions">
+                    <a href="/command" class="btn btn--primary btn--sm">Command Module &rarr;</a>
+                    <a href="/analysis" class="btn btn--outline btn--sm">Analysis &rarr;</a>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. Confidence Trend line chart -->
+        <div class="viz-card">
+            <div class="viz-card__header">
+                <h3>Confidence Trend</h3>
+                <span class="viz-card__badge">Temporal</span>
+            </div>
+            <div class="viz-card__body echarts-chart" id="chartConfidenceTrend">
+                <p class="viz-empty">Loading&hellip;</p>
+            </div>
+        </div>
+
+        <!-- Evidence Chain + Digital Twin links -->
+        <div class="viz-card">
+            <div class="viz-card__header">
+                <h3>Evidence Chain &mdash; Digital Twin</h3>
+                <span class="viz-card__badge">{{ detection.total_evidence }} items</span>
+            </div>
+            <div class="viz-card__body">
+                {% if detection.evidence_chain|length > 0 %}
+                <p class="viz-card__desc">
+                    <strong>{{ detection.total_evidence }}</strong> evidence items.
+                    Risk: <strong>{{ detection.risk_level|replace('_',' ')|upper }}</strong>.
+                    Latest MITRE: <code>{{ detection.mitre_techniques[-1].technique if detection.mitre_techniques else "None" }}</code>
+                </p>
+                {% else %}
+                <p class="viz-card__desc">No evidence yet. Run the simulation.</p>
+                {% endif %}
+                <div class="viz-card__nav-links">
+                    <a href="/digital-twin" class="viz-link">Open Digital Twin &rarr;</a>
+                    <a href="/detection" class="viz-link">Detection &rarr;</a>
+                    <a href="/simulation" class="viz-link">Simulation &rarr;</a>
+                    <a href="/deception" class="viz-link">Deception Grid &rarr;</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Navigation -->
+    <div class="viz-nav">
+        <span class="viz-nav__summary">Sectors: {{ twin_summary.total_sectors }} &middot; Assets: {{ twin_summary.total_assets }} &middot; Healthy: {{ twin_summary.healthy }}</span>
+        <a href="/simulation" class="viz-nav__btn">Simulation</a>
+        <a href="/detection" class="viz-nav__btn">Detection</a>
+        <a href="/deception" class="viz-nav__btn">Deception</a>
+        <a href="/command" class="viz-nav__btn">Command</a>
+        <a href="/adversary" class="viz-nav__btn">Adversary</a>
+        <a href="/impact" class="viz-nav__btn">Impact</a>
+        <a href="/adaptation" class="viz-nav__btn">Adaptation</a>
+        <a href="/analysis" class="viz-nav__btn">Analysis</a>
+        <a href="/reports" class="viz-nav__btn">Reports</a>
+    </div>
+
+</section>
+
+<!-- Inject viz data for initial chart rendering -->
+<script>
+    window.CYBER_VIZ_DATA = {{ viz_data | tojson }};
+</script>
+<script src="https://cdn.jsdelivr.net/npm/echarts@5.5.1/dist/echarts.min.js"></script>
+<script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+<script src="{{ url_for('static', filename='js/dashboard-charts.js') }}"></script>
+{% endblock %}

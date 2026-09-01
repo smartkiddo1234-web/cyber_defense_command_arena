@@ -1,0 +1,92 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="ana-header">
+    <div class="ana-header__text">
+        <h2>Human vs AI Commander Analysis</h2>
+        <p class="ana-header__sub">
+            Comparison of AI defensive recommendations against human commander decisions,
+            derived from the existing Command decision log. Metrics are descriptive only —
+            no claim is made that AI or human is objectively superior.
+            All data is synthetic and local.
+        </p>
+    </div>
+    <div class="ana-header__actions">
+        <a href="/command" class="ana-btn ana-btn--link">Open Command Module</a>
+    </div>
+</section>
+
+<!-- Quality metrics banner -->
+<div class="ana-metrics" id="anaMetrics">
+    <div class="ana-metric-card">
+        <span class="ana-metric-card__label">Total Decisions</span>
+        <span class="ana-metric-card__value" id="metTotal">0</span>
+    </div>
+    <div class="ana-metric-card">
+        <span class="ana-metric-card__label">Approved</span>
+        <span class="ana-metric-card__value ana-metric-card__value--agree" id="metApproved">0</span>
+    </div>
+    <div class="ana-metric-card">
+        <span class="ana-metric-card__label">Overridden</span>
+        <span class="ana-metric-card__value ana-metric-card__value--override" id="metOverridden">0</span>
+    </div>
+    <div class="ana-metric-card">
+        <span class="ana-metric-card__label">Dismissed</span>
+        <span class="ana-metric-card__value ana-metric-card__value--dismiss" id="metDismissed">0</span>
+    </div>
+    <div class="ana-metric-card">
+        <span class="ana-metric-card__label">Agreement Rate</span>
+        <span class="ana-metric-card__value" id="metAgreement">—</span>
+    </div>
+    <div class="ana-metric-card">
+        <span class="ana-metric-card__label">Override Rate</span>
+        <span class="ana-metric-card__value" id="metOverrideRate">—</span>
+    </div>
+    <div class="ana-metric-card">
+        <span class="ana-metric-card__label">Avg AI Confidence</span>
+        <span class="ana-metric-card__value" id="metAvgConf">—</span>
+    </div>
+</div>
+
+<div class="ana-layout">
+
+    <!-- Outcome distribution -->
+    <div class="ana-card ana-card--outcomes">
+        <h3 class="ana-card__title">Simulated Outcome Distribution</h3>
+        <div id="anaOutcomes" class="ana-empty">No decisions recorded yet. Run the simulation and submit recommendations via Command.</div>
+    </div>
+
+    <!-- Disagreements panel -->
+    <div class="ana-card ana-card--disagree">
+        <h3 class="ana-card__title">Disagreements &amp; Explanations</h3>
+        <div id="anaDisagreements" class="ana-empty">No disagreements recorded yet.</div>
+    </div>
+
+    <!-- Full comparison table -->
+    <div class="ana-card ana-card--table">
+        <h3 class="ana-card__title">Full Decision Comparison Log</h3>
+        <div class="ana-table-wrap">
+            <table class="ana-table" id="anaTable">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Timestamp</th>
+                        <th>AI Action</th>
+                        <th>AI Confidence</th>
+                        <th>Threat Level</th>
+                        <th>Human Decision</th>
+                        <th>Human Action</th>
+                        <th>Agreement</th>
+                        <th>Simulated Outcome</th>
+                    </tr>
+                </thead>
+                <tbody id="anaTableBody">
+                    <tr><td colspan="9" class="ana-empty">No decisions recorded yet.</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+<script src="{{ url_for('static', filename='js/analysis.js') }}"></script>
+{% endblock %}

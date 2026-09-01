@@ -1,0 +1,85 @@
+{% extends "base.html" %}
+{% block content %}
+<section class="adpt-header">
+    <div class="adpt-header__text">
+        <h2>Adaptive Adversary &amp; Deception Evolution</h2>
+        <p class="adpt-header__sub">
+            Live adversary behavioral adaptation log. Every time the simulated attacker
+            encounters deception, it shifts its sector, technique, and stealth level.
+            The Deception Engine responds with a new decoy recommendation. All activity
+            is synthetic and local.
+        </p>
+    </div>
+    <div class="adpt-header__actions">
+        <button class="adpt-btn adpt-btn--adapt" id="btnAdapt" title="Trigger an adversary adaptation cycle">
+            Trigger Adaptation
+        </button>
+    </div>
+</section>
+
+<!-- Summary stats -->
+<div class="adpt-stats" id="adptStats">
+    <div class="adpt-stat-card">
+        <span class="adpt-stat-card__label">Adaptations</span>
+        <span class="adpt-stat-card__value" id="statCount">0</span>
+    </div>
+    <div class="adpt-stat-card">
+        <span class="adpt-stat-card__label">Last Trigger</span>
+        <span class="adpt-stat-card__value adpt-stat-card__value--small" id="statLastTrigger">—</span>
+    </div>
+    <div class="adpt-stat-card">
+        <span class="adpt-stat-card__label">New Technique</span>
+        <span class="adpt-stat-card__value adpt-stat-card__value--small" id="statTechnique">—</span>
+    </div>
+    <div class="adpt-stat-card">
+        <span class="adpt-stat-card__label">New Sector</span>
+        <span class="adpt-stat-card__value adpt-stat-card__value--small" id="statSector">—</span>
+    </div>
+    <div class="adpt-stat-card">
+        <span class="adpt-stat-card__label">Deception Response</span>
+        <span class="adpt-stat-card__value adpt-stat-card__value--small" id="statDecoy">—</span>
+    </div>
+</div>
+
+<div class="adpt-layout">
+
+    <!-- Latest adaptation panel -->
+    <div class="adpt-card adpt-card--latest">
+        <h3 class="adpt-card__title">Latest Adaptation Cycle</h3>
+        <div id="adptLatest" class="adpt-empty">No adaptation events yet. Run the simulation and trigger an adaptation.</div>
+    </div>
+
+    <!-- Evidence generated -->
+    <div class="adpt-card adpt-card--evidence">
+        <h3 class="adpt-card__title">Generated Detection Evidence</h3>
+        <div id="adptEvidence" class="adpt-empty">—</div>
+    </div>
+
+    <!-- Full adaptation history table -->
+    <div class="adpt-card adpt-card--history">
+        <h3 class="adpt-card__title">Adaptation History</h3>
+        <div class="adpt-table-wrap">
+            <table class="adpt-table" id="adptTable">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Timestamp</th>
+                        <th>Trigger</th>
+                        <th>Prev Sector → New Sector</th>
+                        <th>Prev Technique → New Technique</th>
+                        <th>Stealth Δ</th>
+                        <th>Significant</th>
+                        <th>New Decoy</th>
+                    </tr>
+                </thead>
+                <tbody id="adptTableBody">
+                    <tr><td colspan="8" class="adpt-empty">No adaptation events yet.</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</div>
+
+<script src="{{ url_for('static', filename='js/adaptation.js') }}"></script>
+{% endblock %}

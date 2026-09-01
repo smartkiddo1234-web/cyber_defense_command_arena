@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="twin-view">
+
+    <!-- Header bar -->
+    <div class="twin-header">
+        <div>
+            <h2>National Digital Twin</h2>
+            <p class="twin-header__subtitle">
+                Interactive topology of the simulated national digital infrastructure
+            </p>
+        </div>
+        <div class="twin-header__stats" id="twinSummaryBar">
+            <span class="stat-chip stat-chip--total"  id="sumSectors">Sectors: &mdash;</span>
+            <span class="stat-chip stat-chip--total"  id="sumAssets">Assets: &mdash;</span>
+            <span class="stat-chip stat-chip--healthy" id="sumHealthy">Healthy: &mdash;</span>
+            <span class="stat-chip stat-chip--warning" id="sumWarning">Warning: &mdash;</span>
+            <span class="stat-chip stat-chip--compromised" id="sumCompromised">Compromised: &mdash;</span>
+            <span class="stat-chip stat-chip--attack" id="sumAttack">Attack Paths: &mdash;</span>
+        </div>
+        <a href="/" class="btn btn--outline">Back to Dashboard</a>
+    </div>
+
+    <!-- Main layout: topology + detail panel -->
+    <div class="twin-layout">
+
+        <!-- SVG Topology Canvas -->
+        <div class="twin-topology" id="topologyContainer">
+            <svg id="topologySvg" class="topology-svg" viewBox="0 0 1600 1120" preserveAspectRatio="xMidYMid meet" style="cursor:default;"></svg>
+
+            <!-- Legend -->
+            <div class="topology-legend">
+                <span class="legend-item"><span class="legend-dot legend-dot--healthy"></span>Healthy</span>
+                <span class="legend-item"><span class="legend-dot legend-dot--warning"></span>Warning</span>
+                <span class="legend-item"><span class="legend-dot legend-dot--compromised"></span>Compromised</span>
+                <span class="legend-item"><span class="legend-dot legend-dot--isolated"></span>Isolated</span>
+                <span class="legend-item"><span class="legend-dot legend-dot--under_attack"></span>Under Attack</span>
+                <span class="legend-item legend-item--hint">Scroll to zoom &middot; Drag to pan &middot; Double-click to reset</span>
+            </div>
+        </div>
+
+        <!-- Detail Panel (shown when a sector or asset is clicked) -->
+        <aside class="twin-detail" id="detailPanel">
+            <div class="twin-detail__placeholder" id="detailPlaceholder">
+                <p class="twin-detail__placeholder-icon">&#9432;</p>
+                <p>Click a <strong>sector node</strong> or <strong>asset node</strong> on the topology to view details.</p>
+            </div>
+
+            <!-- Sector detail content (hidden by default) -->
+            <div class="twin-detail__sector" id="sectorDetail" style="display:none;">
+                <div class="detail-close" id="sectorDetailClose">&times;</div>
+                <h3 id="sectorName">&mdash;</h3>
+                <span class="badge" id="sectorBadge">&mdash;</span>
+
+                <div class="detail-grid" id="sectorMetrics">
+                    <div class="detail-metric">
+                        <span class="detail-metric__value" id="sectorThreat">&mdash;</span>
+                        <span class="detail-metric__label">Threat Level</span>
+                    </div>
+                    <div class="detail-metric">
+                        <span class="detail-metric__value" id="sectorAssets">&mdash;</span>
+                        <span class="detail-metric__label">Assets</span>
+                    </div>
+                    <div class="detail-metric">
+                        <span class="detail-metric__value" id="sectorHealthy">&mdash;</span>
+                        <span class="detail-metric__label">Healthy</span>
+                    </div>
+                    <div class="detail-metric">
+                        <span class="detail-metric__value" id="sectorWarning">&mdash;</span>
+                        <span class="detail-metric__label">Warning</span>
+                    </div>
+                    <div class="detail-metric">
+                        <span class="detail-metric__value" id="sectorCompromised">&mdash;</span>
+                        <span class="detail-metric__label">Compromised</span>
+                    </div>
+                </div>
+
+                <p class="detail-description" id="sectorDescription">&mdash;</p>
+
+                <div class="detail-section">
+                    <h4>Dependencies</h4>
+                    <ul class="detail-list" id="sectorDeps"></ul>
+                </div>
+                <div class="detail-section">
+                    <h4>Incoming Connections</h4>
+                    <ul class="detail-list" id="sectorIncoming"></ul>
+                </div>
+                <div class="detail-section">
+                    <h4>Outgoing Connections</h4>
+                    <ul class="detail-list" id="sectorOutgoing"></ul>
+                </div>
+            </div>
+
+            <!-- Asset detail content (hidden by default) -->
+            <div class="twin-detail__asset" id="assetDetail" style="display:none;">
+                <div class="detail-close" id="assetDetailClose">&times;</div>
+                <h3 id="assetName">&mdash;</h3>
+                <span class="badge" id="assetBadge">&mdash;</span>
+
+                <div class="detail-grid">
+                    <div class="detail-metric">
+                        <span class="detail-metric__value" id="assetSector">&mdash;</span>
+                        <span class="detail-metric__label">Sector</span>
+                    </div>
+                    <div class="detail-metric">
+                        <span class="detail-metric__value" id="assetCriticality">&mdash;</span>
+                        <span class="detail-metric__label">Criticality</span>
+                    </div>
+                    <div class="detail-metric">
+                        <span class="detail-metric__value" id="assetThreatState">&mdash;</span>
+                        <span class="detail-metric__label">Threat State</span>
+                    </div>
+                </div>
+
+                <div class="detail-section">
+                    <h4>Simulated Activity</h4>
+                    <ul class="detail-list" id="assetActivity">
+                        <li class="detail-list__empty">No simulated activity yet</li>
+                    </ul>
+                </div>
+                <div class="detail-section">
+                    <h4>Connected Dependencies</h4>
+                    <ul class="detail-list" id="assetDeps"></ul>
+                </div>
+            </div>
+        </aside>
+
+    </div>
+</section>
+
+<!-- Inject twin data as JSON for the JS renderer -->
+<script>
+    window.CYBER_TWIN_DATA = {{ twin_data | tojson }};
+</script>
+<script src="{{ url_for('static', filename='js/twin.js') }}"></script>
+{% endblock %}

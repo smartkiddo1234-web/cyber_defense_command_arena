@@ -1,0 +1,127 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="sim-view">
+
+    <!-- Header -->
+    <div class="sim-header">
+        <div>
+            <h2>Attack Simulation Control</h2>
+            <p class="sim-header__subtitle">
+                Build custom attack paths or run the fixed Demo Scenario
+            </p>
+        </div>
+        <div class="sim-controls" id="simControls">
+            <button class="btn btn--primary" id="btnStart" onclick="startSim()">Start Default</button>
+            <button class="btn btn--warning" id="btnStop" onclick="stopSim()" disabled>Pause</button>
+            <button class="btn btn--danger"  id="btnReset" onclick="resetSim()">Reset</button>
+            <button class="btn btn--outline" id="btnStep" onclick="stepSim()">Step Once</button>
+            <button class="btn btn--primary" id="btnDemo" onclick="runDemo()" style="margin-left:0.5rem; border-color:var(--color-success); color:var(--color-success);">Run Demo Scenario</button>
+        </div>
+    </div>
+
+    <!-- Path Builder (user-controlled simulation) -->
+    <div class="sim-path-builder" id="pathBuilder">
+        <div class="sim-path-builder__header">
+            <h3>Path Builder</h3>
+            <span class="sim-path-builder__hint">Select sectors to build a custom attack path. Only valid Digital Twin connections are allowed.</span>
+        </div>
+
+        <!-- Step list -->
+        <div class="sim-path-builder__steps" id="pathSteps">
+            <!-- Steps are rendered dynamically by JS -->
+        </div>
+
+        <!-- Add step row -->
+        <div class="sim-path-builder__add" id="addStepRow">
+            <div class="sim-path-builder__field">
+                <label for="selStartSector">Start:</label>
+                <select id="selStartSector" class="sim-select">
+                    <option value="">Select sector&hellip;</option>
+                </select>
+            </div>
+            <div class="sim-path-builder__field">
+                <label for="selTechnique">Technique:</label>
+                <select id="selTechnique" class="sim-select">
+                    <option value="T1595">Active Scanning (T1595)</option>
+                </select>
+            </div>
+            <div class="sim-path-builder__field">
+                <label for="selThreatLevel">Threat:</label>
+                <select id="selThreatLevel" class="sim-select">
+                    <option value="moderate">Moderate</option>
+                    <option value="low">Low</option>
+                    <option value="high">High</option>
+                    <option value="severe">Severe</option>
+                </select>
+            </div>
+            <button class="btn btn--primary btn--sm" id="btnAddStep" onclick="addPathStep()">+ Add Step</button>
+        </div>
+
+        <!-- Path preview -->
+        <div class="sim-path-builder__preview" id="pathPreview">
+            <span class="sim-path-builder__empty">No steps added yet.</span>
+        </div>
+
+        <!-- Validation feedback -->
+        <div class="sim-path-builder__feedback" id="pathFeedback" style="display:none;"></div>
+
+        <!-- Launch custom simulation -->
+        <div class="sim-path-builder__actions">
+            <button class="btn btn--primary" id="btnCustomStart" onclick="configureAndStart()" disabled>Configure &amp; Start Custom</button>
+            <button class="btn btn--outline btn--sm" id="btnClearPath" onclick="clearPath()">Clear Path</button>
+        </div>
+    </div>
+
+    <!-- Progress bar -->
+    <div class="sim-progress">
+        <div class="sim-progress__bar" id="progressBar" style="width:0%"></div>
+    </div>
+    <p class="sim-progress__label" id="progressLabel">Step 0 / {{ total_steps }} — Idle</p>
+    <div id="demoFeedback" style="display:none; padding:0.5rem 0.85rem; margin-bottom:0.75rem; background:rgba(52,184,114,0.08); border:1px solid rgba(52,184,114,0.25); border-radius:4px; font-size:0.78rem; color:var(--color-success); font-weight:600;"></div>
+
+    <div class="sim-layout">
+
+        <!-- Attack path visualization -->
+        <div class="sim-panel">
+            <div class="sim-panel__header"><h3>Attack Path</h3></div>
+            <div class="sim-panel__body" id="attackPathView">
+                <p class="sim-panel__empty">No attack path yet. Start the simulation.</p>
+            </div>
+        </div>
+
+        <!-- Current step details -->
+        <div class="sim-panel">
+            <div class="sim-panel__header"><h3>Current Activity</h3></div>
+            <div class="sim-panel__body" id="currentActivity">
+                <p class="sim-panel__empty">Waiting for simulation to begin&hellip;</p>
+            </div>
+        </div>
+
+        <!-- Event log -->
+        <div class="sim-panel sim-panel--wide">
+            <div class="sim-panel__header"><h3>Event Log</h3></div>
+            <div class="sim-panel__body">
+                <table class="sim-table" id="eventTable">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Time</th>
+                            <th>Sector</th>
+                            <th>Technique</th>
+                            <th>Status</th>
+                            <th>Description</th>
+                        </tr>
+                    </thead>
+                    <tbody id="eventTableBody">
+                        <tr class="sim-table__empty"><td colspan="6">No events yet.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<script src="{{ url_for('static', filename='js/simulation.js') }}"></script>
+{% endblock %}

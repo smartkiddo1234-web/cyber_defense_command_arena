@@ -1,0 +1,155 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="det-view">
+
+    <!-- Header with Simulate Control -->
+    <div class="det-header">
+        <div>
+            <h2>Detection &amp; Evidence</h2>
+            <p class="det-header__subtitle">
+                Simulated threat detection with temporal confidence decay and MITRE ATT&amp;CK mapping.
+                All data is synthetic.
+            </p>
+        </div>
+        <div class="det-header__actions">
+            <button class="btn btn--primary" id="btnSimulateEvent" title="Inject a random synthetic attack event">
+                Simulate Attack Event
+            </button>
+            <a href="/simulation" class="btn btn--outline">Simulation &rarr;</a>
+        </div>
+    </div>
+
+    <!-- Simulate feedback (hidden by default) -->
+    <div class="det-sim-feedback" id="simFeedback" style="display:none;"></div>
+
+    <!-- Stats Row -->
+    <div class="det-stats">
+        <div class="det-stat">
+            <span class="det-stat__value" id="statConfidence">0%</span>
+            <span class="det-stat__label">Threat Confidence</span>
+        </div>
+        <div class="det-stat">
+            <span class="det-stat__value" id="statRiskLevel">NORMAL</span>
+            <span class="det-stat__label">Risk Level</span>
+        </div>
+        <div class="det-stat">
+            <span class="det-stat__value" id="statEvidence">0</span>
+            <span class="det-stat__label">Evidence Items</span>
+        </div>
+        <div class="det-stat">
+            <span class="det-stat__value" id="statAlerts">0</span>
+            <span class="det-stat__label">Active Alerts</span>
+        </div>
+        <div class="det-stat">
+            <span class="det-stat__value" id="statTechniques">0</span>
+            <span class="det-stat__label">MITRE Techniques</span>
+        </div>
+    </div>
+
+    <div class="det-layout">
+
+        <!-- Threat Score Card -->
+        <div class="det-card">
+            <div class="det-card__header"><h3>Threat Score</h3></div>
+            <div class="det-card__body det-card__body--center">
+                <div class="det-score-ring" id="scoreRing">
+                    <svg viewBox="0 0 120 120" class="score-svg">
+                        <circle cx="60" cy="60" r="52" class="score-bg"/>
+                        <circle cx="60" cy="60" r="52" class="score-fg" id="scoreArc"
+                                stroke-dasharray="326.7" stroke-dashoffset="326.7"/>
+                    </svg>
+                    <span class="det-score-value" id="scoreValue">0</span>
+                </div>
+                <span class="det-severity-badge" id="severityBadge">NONE</span>
+                <p class="det-score-explain">
+                    confidence(t) = &Sigma;(weight &times; strength &times; e<sup>&minus;&lambda;&Delta;t</sup>)<br/>
+                    Older unreinforced evidence gradually loses influence.
+                </p>
+            </div>
+        </div>
+
+        <!-- Risk State Indicator -->
+        <div class="det-card">
+            <div class="det-card__header"><h3>Operational Risk State</h3></div>
+            <div class="det-card__body">
+                <div class="risk-ladder" id="riskLadder">
+                    <div class="risk-step risk-step--normal risk-step--active" data-level="normal">
+                        <span class="risk-step__indicator"></span>
+                        <span class="risk-step__label">Normal</span>
+                        <span class="risk-step__desc">No significant threat</span>
+                    </div>
+                    <div class="risk-step" data-level="suspicious">
+                        <span class="risk-step__indicator"></span>
+                        <span class="risk-step__label">Suspicious</span>
+                        <span class="risk-step__desc">Anomalous activity observed</span>
+                    </div>
+                    <div class="risk-step" data-level="high_risk">
+                        <span class="risk-step__indicator"></span>
+                        <span class="risk-step__label">High Risk</span>
+                        <span class="risk-step__desc">Confirmed adversarial activity</span>
+                    </div>
+                    <div class="risk-step" data-level="critical">
+                        <span class="risk-step__indicator"></span>
+                        <span class="risk-step__label">Critical</span>
+                        <span class="risk-step__desc">Widespread compromise</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sector Heatmap -->
+        <div class="det-card det-card--wide">
+            <div class="det-card__header"><h3>Sector Detection Activity</h3></div>
+            <div class="det-card__body">
+                <div class="det-sector-grid" id="sectorHeatmap">
+                    <p class="det-card__empty">No sector activity recorded yet.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Active Alerts -->
+        <div class="det-card">
+            <div class="det-card__header"><h3>Active Alerts <span class="det-alert-count" id="alertCount">0</span></h3></div>
+            <div class="det-card__body">
+                <ul class="det-alert-list" id="alertList">
+                    <li class="det-alert-list__empty">No active alerts.</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- MITRE ATT&CK Techniques -->
+        <div class="det-card">
+            <div class="det-card__header"><h3>MITRE ATT&amp;CK Techniques</h3></div>
+            <div class="det-card__body">
+                <div class="det-mitre-grid" id="mitreGrid">
+                    <p class="det-card__empty">No techniques observed yet.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Evidence Chain -->
+        <div class="det-card det-card--wide">
+            <div class="det-card__header"><h3>Evidence Chain</h3></div>
+            <div class="det-card__body">
+                <div class="det-timeline" id="evidenceTimeline">
+                    <p class="det-card__empty">No evidence collected yet. Run the simulation or click "Simulate Attack Event" to generate events.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Simulated Attack Path -->
+        <div class="det-card det-card--wide">
+            <div class="det-card__header"><h3>Simulated Attacker Progression</h3></div>
+            <div class="det-card__body">
+                <div class="det-attack-path" id="detAttackPath">
+                    <p class="det-card__empty">No attack path recorded.</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<script src="{{ url_for('static', filename='js/detection.js') }}"></script>
+{% endblock %}

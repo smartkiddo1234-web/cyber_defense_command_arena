@@ -1,0 +1,116 @@
+{% extends "base.html" %}
+
+{% block content %}
+<section class="imp-view">
+
+    <!-- Header -->
+    <div class="imp-header">
+        <div>
+            <h2>National Security Impact</h2>
+            <p class="imp-header__subtitle">
+                Cascading dependency propagation and national-security impact assessment.
+                Derived from Digital Twin sector relationships and simulation state.
+            </p>
+        </div>
+        <div class="imp-header__actions">
+            <a href="/digital-twin" class="btn btn--outline">Digital Twin &rarr;</a>
+        </div>
+    </div>
+
+    <!-- Top Stats -->
+    <div class="imp-stats">
+        <div class="imp-stat">
+            <span class="imp-stat__value" id="statLevel">LOW</span>
+            <span class="imp-stat__label">Impact Level</span>
+        </div>
+        <div class="imp-stat">
+            <span class="imp-stat__value" id="statScore">0.000</span>
+            <span class="imp-stat__label">Impact Score</span>
+        </div>
+        <div class="imp-stat">
+            <span class="imp-stat__value" id="statCompromised">0</span>
+            <span class="imp-stat__label">Compromised Sectors</span>
+        </div>
+        <div class="imp-stat">
+            <span class="imp-stat__value" id="statAtRisk">0</span>
+            <span class="imp-stat__label">Sectors at Risk</span>
+        </div>
+        <div class="imp-stat">
+            <span class="imp-stat__value" id="statPriority">—</span>
+            <span class="imp-stat__label">Priority Sector</span>
+        </div>
+    </div>
+
+    <div class="imp-layout">
+
+        <!-- Impact Classification -->
+        <div class="imp-card">
+            <div class="imp-card__header"><h3>Impact Classification</h3></div>
+            <div class="imp-card__body">
+                <div class="imp-classify" id="impactClassify">
+                    <div class="imp-level imp-level--low" data-level="low">
+                        <span class="imp-level__dot"></span>
+                        <span class="imp-level__label">LOW</span>
+                        <span class="imp-level__desc">Minimal cascading risk</span>
+                    </div>
+                    <div class="imp-level" data-level="moderate">
+                        <span class="imp-level__dot"></span>
+                        <span class="imp-level__label">MODERATE</span>
+                        <span class="imp-level__desc">Limited propagation</span>
+                    </div>
+                    <div class="imp-level" data-level="high">
+                        <span class="imp-level__dot"></span>
+                        <span class="imp-level__label">HIGH</span>
+                        <span class="imp-level__desc">Significant cross-sector risk</span>
+                    </div>
+                    <div class="imp-level" data-level="critical">
+                        <span class="imp-level__dot"></span>
+                        <span class="imp-level__label">CRITICAL</span>
+                        <span class="imp-level__desc">Widespread national threat</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Priority Sector -->
+        <div class="imp-card">
+            <div class="imp-card__header"><h3>Defensive Priority</h3></div>
+            <div class="imp-card__body" id="priorityPanel">
+                <p class="imp-card__empty">No defensive priority identified yet.</p>
+            </div>
+        </div>
+
+        <!-- Propagation Chains -->
+        <div class="imp-card imp-card--wide">
+            <div class="imp-card__header"><h3>Dependency Propagation Chains</h3></div>
+            <div class="imp-card__body" id="propagationChains">
+                <p class="imp-card__empty">No propagation chains. Start the simulation to see cascading risk.</p>
+            </div>
+        </div>
+
+        <!-- Affected Sectors -->
+        <div class="imp-card imp-card--wide">
+            <div class="imp-card__header"><h3>Affected Sectors &amp; Critical Assets</h3></div>
+            <div class="imp-card__body">
+                <table class="imp-table" id="affectedTable">
+                    <thead>
+                        <tr>
+                            <th>Source</th>
+                            <th>Affected Sector</th>
+                            <th>Dependency</th>
+                            <th>Risk Score</th>
+                            <th>Critical Assets</th>
+                        </tr>
+                    </thead>
+                    <tbody id="affectedBody">
+                        <tr class="imp-table__empty"><td colspan="5">No affected sectors yet.</td></tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<script src="{{ url_for('static', filename='js/impact.js') }}"></script>
+{% endblock %}
