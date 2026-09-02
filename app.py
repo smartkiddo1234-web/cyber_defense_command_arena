@@ -1002,10 +1002,20 @@ def create_app(config_name=None):
 
 
 # ---------------------------------------------------------------------------
+# Top-level application instance
+#
+# Exposes the Flask app as a module-level variable named "app" so that WSGI
+# servers and Vercel's Flask preset can auto-detect it. The factory
+# (create_app) remains available and unchanged for tests and custom configs.
+# ---------------------------------------------------------------------------
+
+app = create_app()
+
+
+# ---------------------------------------------------------------------------
 # Entry point
 # ---------------------------------------------------------------------------
 
 if __name__ == "__main__":
-    app = create_app()
     # Use a non-debug host/port suitable for local development
     app.run(host="127.0.0.1", port=5000, debug=False)
