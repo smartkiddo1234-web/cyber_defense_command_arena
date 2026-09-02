@@ -23,7 +23,13 @@ class Config:
     TESTING = False
 
     # Database
-    DATABASE_DIR = os.path.join(BASE_DIR, "database")
+    # Vercel's serverless runtime mounts the application bundle read-only;
+    # only /tmp is writable. Redirect the SQLite database there when running
+    # on Vercel so initialization succeeds. Local paths are unchanged.
+    if os.environ.get("VERCEL"):
+        DATABASE_DIR = "/tmp"
+    else:
+        DATABASE_DIR = os.path.join(BASE_DIR, "database")
     DATABASE_PATH = os.path.join(DATABASE_DIR, "cyber_arena.db")
     DATABASE_URI = f"sqlite:///{DATABASE_PATH}"
 
